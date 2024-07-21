@@ -1,0 +1,134 @@
+﻿<!DOCTYPE html>
+<html translate="no">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peta Cuaca BMKG dengan Leaflet</title>
+    <!-- Peta Cuaca BMKG dengan Leaflet By Riswan Nopiyar -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #map-weather {
+            height: 100vh;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map-weather"></div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        // Inisialisasi peta dengan pembatasan zoom
+        let map = L.map('map-weather', {
+            center: [-1.659, 114.679], // Koordinat Kalimantan Selatan
+            zoom: 4, // Level zoom awal
+            minZoom: 4, // Level zoom minimum
+            maxZoom: 5 // Level zoom maksimum
+        });
+
+        // Tambahkan layer peta dasar
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+
+        let apiURL = 'https://data.bmkg.go.id/DataMKG/MEWS/DigitalForecast/DigitalForecast-Indonesia.xml';
+
+        let weatherMarkerLayer = L.layerGroup(); // Dideklarasikan di luar fungsi untuk akses global
+
+        async function fetchWeatherData() {
+            try {
+                let response = await fetch(apiURL);
+                let xmlString = await response.text();
+                let parser = new DOMParser();
+                let weatherDataXml = parser.parseFromString(xmlString, 'text/xml');
+                processWeatherData(weatherDataXml);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        fetchWeatherData();
+
+        function processWeatherData(weatherDataXml) {
+            let weatherData = weatherDataXml.querySelectorAll('area');
+
+            let weatherConditionCodes = {
+                '0': ['Cerah', 'clearskies'],
+                '1': ['Sebagian Berawan', 'partlycloudy'],
+                '2': ['Sebagian Berawan', 'partlycloudy'],
+                '3': ['Berawan', 'mostlycloudy'],
+                '4': ['Mendung', 'overcast'],
+                '5': ['Berawan Asap', 'haze'],
+                '10': ['Berasap', 'smoke'],
+                '45': ['Berkabut', 'fog'],
+                '60': ['Hujan Ringan', 'lightrain'],
+                '61': ['Hujan Sedang', 'rain'],
+                '63': ['Hujan Lebat', 'heavyrain'],
+                '80': ['Hujan Lokal', 'isolatedshower'],
+                '95': ['Badai Petir', 'severethunderstorm'],
+                '97': ['Badai Petir', 'severethunderstorm'],
+            };
+
+            weatherData.forEach((area) => {
+                let regionName = area.getAttribute('description');
+                let latitudeValue = area.getAttribute('latitude');
+                let longitudeValue = area.getAttribute('longitude');
+                let weatherNodes = area.querySelectorAll('parameter[id="weather"] timerange');
+                let temperatureNodes = area.querySelectorAll('parameter[id="t"] timerange');
+                let humidityNodes = area.querySelectorAll('parameter[id="hu"] timerange');
+
+                let currentHour = new Date().getUTCHours() + 8; // Menyesuaikan ke GMT+8 (silahkan ganti untuk menyesuaikan)
+                currentHour = currentHour >= 24 ? currentHour - 24 : currentHour;
+                let nearestForecastHour = [0, 6, 12, 18].reduce((prev, curr) => Math.abs(curr - currentHour) < Math.abs(prev - currentHour) ? curr : prev);
+
+                let nearestForecastHourString = nearestForecastHour.toString().padStart(2, '0') + '00';
+                let nearestForecastIndex = Array.from(weatherNodes).findIndex(weatherNode => weatherNode.getAttribute('datetime').slice(8, 10) + '00' === nearestForecastHourString);
+
+                if (nearestForecastIndex !== -1) {
+                    let forecastCode = weatherNodes[nearestForecastIndex].querySelector('value').textContent;
+                    let iconPrefix = weatherConditionCodes[forecastCode][1];
+                    let isAM = weatherNodes[nearestForecastIndex].getAttribute('datetime').slice(8, 10) < 12;
+                    let iconUrl = `map-icon-weather/${iconPrefix}.webp`; // URL untuk ikon
+                    let imageUrl = `map-image-weather/${iconPrefix}${isAM ? '-am' : '-pm'}.webp`; // URL untuk gambar
+                    let description = weatherConditionCodes[forecastCode][0];
+
+                    let temperature = temperatureNodes[nearestForecastIndex].querySelector('value').textContent;
+                    let temperatureUnit = temperatureNodes[nearestForecastIndex].querySelector('value').getAttribute('unit');
+
+                    let humidity = humidityNodes[nearestForecastIndex].querySelector('value').textContent;
+                    let humidityUnit = humidityNodes[nearestForecastIndex].querySelector('value').getAttribute('unit');
+
+                    let forecastDateTimeString = weatherNodes[nearestForecastIndex].getAttribute('datetime');
+                    let forecastDateTime = new Date(forecastDateTimeString.slice(0, 4), parseInt(forecastDateTimeString.slice(4, 6)) - 1, forecastDateTimeString.slice(6, 8), forecastDateTimeString.slice(8, 10), forecastDateTimeString.slice(10, 12), forecastDateTimeString.slice(12, 14));
+                    let hours = forecastDateTime.getHours().toString().padStart(2, '0');
+                    let minutes = forecastDateTime.getMinutes().toString().padStart(2, '0');
+
+                    let marker = L.marker([latitudeValue, longitudeValue], {
+                        icon: L.icon({
+                            iconUrl: iconUrl,
+                            iconSize: [95, 95], // Ukuran ikon 95x95
+                            iconAnchor: [47.5, 47.5] // Titik jangkar di tengah ikon
+                        })
+
+                    }).bindPopup(`
+                      <strong>Wilayah: ${regionName}</strong><br>
+    <div style="text-align:center; margin-top:10px;">
+        <img src="${imageUrl}" alt="${description}" style="width:100px;height:70px;"/>
+    </div>
+    Deskripsi: ${description}<br>
+    Suhu: ${temperature} °${temperatureUnit}<br>
+    Kelembapan: ${humidity} ${humidityUnit}<br>
+    Waktu: ${hours}:${minutes}-sekarang
+                    `);
+                    marker.addTo(weatherMarkerLayer);
+                }
+            });
+        }
+
+        map.addLayer(weatherMarkerLayer);
+    </script>
+</body>
+
+</html>
