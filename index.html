@@ -89,7 +89,7 @@
                 if (nearestForecastIndex !== -1) {
                     let forecastCode = weatherNodes[nearestForecastIndex].querySelector('value').textContent;
                     let iconPrefix = weatherConditionCodes[forecastCode][1];
-                    let isAM = weatherNodes[nearestForecastIndex].getAttribute('datetime').slice(8, 10) < 12;
+                    let isAM = (nearestForecastHour < 12 && nearestForecastHour !== 0);
                     let iconUrl = `map-icon-weather/${iconPrefix}.webp`; // URL untuk ikon
                     let imageUrl = `map-image-weather/${iconPrefix}${isAM ? '-am' : '-pm'}.webp`; // URL untuk gambar
                     let description = weatherConditionCodes[forecastCode][0];
