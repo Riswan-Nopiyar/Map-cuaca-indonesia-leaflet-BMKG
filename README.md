@@ -1,7 +1,7 @@
 # Map-cuaca-indonesia-leaflet-BMKG
 
 ## Deskripsi
-Proyek ini adalah aplikasi peta cuaca Indonesia menggunakan Leaflet yang memanfaatkan data dari BMKG. Peta ini menampilkan kondisi cuaca terkini di berbagai wilayah Indonesia dengan ikon dan informasi terkait.
+Proyek ini adalah peta cuaca Indonesia menggunakan Leaflet yang memanfaatkan data dari BMKG. Peta ini menampilkan kondisi cuaca terkini di berbagai wilayah Indonesia dengan gambar cuaca yang lebih realistis dan informasi terkait.
 
 ## Demo
 Anda dapat melihat demo dari proyek ini melalui link berikut:
@@ -14,5 +14,5 @@ Anda dapat melihat demo dari proyek ini melalui link berikut:
 Untuk menjalankan proyek ini secara lokal:
 1. Clone repositori ini:
    ```bash
-   git clone https://github.com/riswan-nopiyar/Map-cuaca-indonesia-leaflet-BMKG.git
+   git clone https://github.com/Riswan-Nopiyar/Map-cuaca-indonesia-leaflet-BMKG.git
 2. Buka index.html di browser
