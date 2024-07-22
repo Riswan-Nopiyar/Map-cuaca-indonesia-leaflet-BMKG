@@ -89,9 +89,9 @@
                 if (nearestForecastIndex !== -1) {
                     let forecastCode = weatherNodes[nearestForecastIndex].querySelector('value').textContent;
                     let iconPrefix = weatherConditionCodes[forecastCode][1];
-                    let isAM = (nearestForecastHour < 12 && nearestForecastHour !== 0);
+                    let isDark = (nearestForecastHour === 0 || nearestForecastHour === 18);
+                    let imageUrl = `map-image-weather/${iconPrefix}${isDark ? '-pm' : '-am'}.webp`;
                     let iconUrl = `map-icon-weather/${iconPrefix}.webp`; // URL untuk ikon
-                    let imageUrl = `map-image-weather/${iconPrefix}${isAM ? '-am' : '-pm'}.webp`; // URL untuk gambar
                     let description = weatherConditionCodes[forecastCode][0];
 
                     let temperature = temperatureNodes[nearestForecastIndex].querySelector('value').textContent;
