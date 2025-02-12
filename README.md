@@ -34,7 +34,7 @@
 
 <script>
     async function loadJS() {
-        const url = "https://cdn.jsdelivr.net/gh/riswan-nopiyar/Map-cuaca-indonesia-leaflet-BMKG@main/BMKG-2025.js";
+        const url = "https://cdn.jsdelivr.net/gh/riswan-nopiyar/Map-cuaca-indonesia-leaflet-BMKG@cdn/BMKG-2025.js";
         try {
             const response = await fetch(url);
             const scriptText = await response.text();
