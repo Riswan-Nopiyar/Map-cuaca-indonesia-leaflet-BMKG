@@ -29,28 +29,8 @@
 <body>
 
 <div class="bmkg-container">
-    <object id="solarSystem" data="https://cuaca.bmkg.go.id/map" type="text/html" style="border:none;"></object>
+    <object data="https://cuaca.bmkg.go.id/map" type="text/html" style="border:none;"></object>
 </div>
-
-<script>
-    async function loadJS() {
-        const url = "https://cdn.jsdelivr.net/gh/riswan-nopiyar/Map-cuaca-indonesia-leaflet-BMKG@cdn/BMKG-2025.js";
-        try {
-            const response = await fetch(url);
-            const scriptText = await response.text();
-
-            const objectElement = document.getElementById("solarSystem");
-            const objectDoc = objectElement.contentDocument || objectElement.contentWindow.document;
-            objectDoc.open();
-            objectDoc.write("<script>" + scriptText + "<\/script>");
-            objectDoc.close();
-        } catch (error) {
-            console.error("Gagal memuat script:", error);
-        }
-    }
-
-    loadJS();
-</script>
 
 </body>
 </html>
