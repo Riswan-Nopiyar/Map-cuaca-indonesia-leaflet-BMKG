@@ -1,5 +1,5 @@
 # Map-cuaca-indonesia-leaflet-BMKG
-# Versi baru (2025)
+# Versi baru (2025) Copy dan Paste kode dibawah !
 
 ![screencapture-riswan-nopiyar-github-io-Map-cuaca-indonesia-leaflet-BMKG-2025-02-12-21_34_19](https://github.com/user-attachments/assets/1d0506a8-f785-46a0-a65e-6b1076cbcd6e)
 
