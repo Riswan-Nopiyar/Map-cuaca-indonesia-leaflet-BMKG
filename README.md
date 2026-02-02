@@ -16,12 +16,13 @@
             border-radius: 12px;
         }
 
-        .bmkg-container object {
+        .bmkg-container iframe {
             width: 100%;
             height: 700px;
             position: absolute;
             top: -67px;
             left: 0;
+            border: none;
         }
     </style>
 </head>
@@ -29,7 +30,12 @@
 <body>
 
 <div class="bmkg-container">
-    <object data="https://cuaca.bmkg.go.id/map" type="text/html" style="border:none;"></object>
+    <iframe 
+        src="https://cuaca.bmkg.go.id/map" 
+        loading="lazy"
+        referrerpolicy="no-referrer"
+        sandbox="allow-scripts allow-same-origin allow-forms">
+    </iframe>
 </div>
 
 </body>
